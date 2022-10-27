@@ -1,0 +1,67 @@
+version: '3.8'
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      # Ensure the read and write access
+    volumes:
+      - ./site/:/var/www/html/:rw
+      - ./conf/nginx/conf.d:/etc/nginx/conf.d/:ro
+      - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./log/nginx/:/var/log/nginx/:rw
+    networks:
+      - share_net
+
+  php56:
+    build: ./php/php56/
+    expose:
+      - "9000"
+    volumes:
+      - ./site/:/var/www/html/:rw
+      - ./conf/php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./conf/php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ./log/php-fpm/:/var/log/php-fpm/:rw
+    networks:
+      - share_net
+
+  php72:
+    build: ./php/php72/
+    expose:
+      - "9000"
+    volumes:
+      - ./site/:/var/www/html/:rw
+      - ./conf/php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./conf/php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ./log/php-fpm/:/var/log/php-fpm/:rw
+    networks:
+      - share_net
+
+  php80:
+    build: ./php/php80/
+    expose:
+      - "9000"
+    volumes:
+      - ./site/:/var/www/html/:rw
+      - ./conf/php/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./conf/php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ./log/php-fpm/:/var/log/php-fpm/:rw
+    networks:
+      - share_net
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./conf/mysql/my.cnf:/etc/mysql/my.cnf:ro
+      - ./mysql/:/var/lib/mysql/:rw
+      - ./log/mysql/:/var/log/mysql/:rw
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234567"
+    networks:
+      - share_net
+
+networks:
+  share_net:
+    driver: bridge
